@@ -174,6 +174,8 @@ GREYSCALE_BLOCK_TEXTURES: dict[Path, Path] = {
         Path("src/main/resources/assets/dyeable_ropes/textures/block/rope_particle_greyscale.png"),
     SIMULATED_ASSETS / "textures/block/rope_winch/winch.png":
         Path("src/main/resources/assets/dyeable_ropes/textures/block/rope_winch/winch_greyscale.png"),
+    SIMULATED_ASSETS / "textures/block/rope_winch/winch_coil.png":
+        Path("src/main/resources/assets/dyeable_ropes/textures/block/rope_winch/winch_coil_greyscale.png"),
 }
 
 GREYSCALE_FLOOR = 0.4
