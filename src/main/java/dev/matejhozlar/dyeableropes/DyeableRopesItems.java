@@ -1,6 +1,5 @@
 package dev.matejhozlar.dyeableropes;
 
-import dev.simulated_team.simulated.content.items.rope.RopeItem.RopeItem;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
@@ -14,11 +13,11 @@ import java.util.Map;
 public final class DyeableRopesItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(DyeableRopes.MODID);
 
-    public static final Map<DyeColor, DeferredHolder<Item, RopeItem>> ROPES = new EnumMap<>(DyeColor.class);
+    public static final Map<DyeColor, DeferredHolder<Item, DyedRopeItem>> ROPES = new EnumMap<>(DyeColor.class);
 
     static {
         for (DyeColor color : DyeColor.values()) {
-            ROPES.put(color, ITEMS.register(color.getName() + "_rope", () -> new RopeItem(new Item.Properties())));
+            ROPES.put(color, ITEMS.register(color.getName() + "_rope", () -> new DyedRopeItem(new Item.Properties(), color)));
         }
     }
 
