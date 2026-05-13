@@ -1,0 +1,70 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_curseforge:
+        description: 'Publish to CurseForge'
+        type: boolean
+        default: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x gradlew
+
+      - name: Get version
+        id: version
+        run: echo "value=$(grep '^mod_version=' gradle.properties | cut -d'=' -f2)" >> $GITHUB_OUTPUT
+
+      - name: Build Simulated jar
+        run: |
+          git clone --depth 1 https://github.com/Creators-of-Aeronautics/Simulated-Project.git ../Simulated-Project
+          chmod +x ../Simulated-Project/gradlew
+          (cd ../Simulated-Project && ./gradlew :simulated:neoforge:jar --no-daemon)
+
+      - name: Generate derived assets
+        run: |
+          pip install --quiet Pillow
+          python scripts/recolor_ropes.py
+          python scripts/generate_jsons.py
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Publish to CurseForge
+        if: ${{ inputs.publish_curseforge }}
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          version: ${{ steps.version.outputs.value }}
+          version-type: release
+          name: "[${{ steps.version.outputs.value }}] Dyeable Ropes"
+          changelog-file: CHANGELOG.md
+          loaders: neoforge
+          game-versions: 1.21.1
+          files: build/libs/!(*-@(dev|sources|javadoc)).jar
+          java: 21
+
+          curseforge-id: 1542130
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
