@@ -34,3 +34,6 @@ Addon for Create: Aeronautics (Simulated module). Adds 16 dye-colored rope items
     ordering="AFTER"
     side="BOTH"
     reason="Recipes consume simulated:rope_coupling."
+
+[[mixins]]
+config="dyeable_ropes.mixins.json"
