@@ -8,7 +8,8 @@
     "RopeStrandHolderBehaviorMixin"
   ],
   "client": [
-    "ClientRopeItemHandlerMixin"
+    "ClientRopeItemHandlerMixin",
+    "RopeStrandRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

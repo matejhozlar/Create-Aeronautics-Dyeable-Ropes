@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.matejhozlar.dyeableropes.DyedRopeItem;
 import dev.matejhozlar.dyeableropes.DyedStrandSavedData;
+import dev.matejhozlar.dyeableropes.network.SetStrandColorPayload;
 import dev.simulated_team.simulated.content.blocks.rope.RopeStrandHolderBehavior;
 import dev.simulated_team.simulated.content.blocks.rope.strand.server.ServerRopeStrand;
 import dev.simulated_team.simulated.content.items.rope.RopeItem.RopeItem;
@@ -12,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -44,6 +46,7 @@ public class RopeItemMixin {
         }
         if (strand != null) {
             DyedStrandSavedData.get(serverLevel).setColor(strand.getUUID(), dyed.getColor());
+            PacketDistributor.sendToAllPlayers(new SetStrandColorPayload(strand.getUUID(), dyed.getColor().getId()));
         }
         return true;
     }
