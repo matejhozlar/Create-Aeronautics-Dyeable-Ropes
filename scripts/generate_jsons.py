@@ -45,6 +45,7 @@ DERIVED_ROPE_MODELS: dict[str, str] = {
 # Rewrite any texture reference from this prefix to our greyscale prefix.
 TEXTURE_REWRITES: dict[str, str] = {
     "simulated:block/rope_particle": f"{MOD_ID}:block/rope_particle_greyscale",
+    "simulated:block/rope_winch/winch": f"{MOD_ID}:block/rope_winch/winch_greyscale",
 }
 
 

@@ -165,23 +165,37 @@ SIMULATED_ASSETS = Path(
     "../Simulated-Project/simulated/common/src/main/resources/assets/simulated"
 )
 
-# Source path -> output path (relative to project root). All are luma-normalized
-# only; no tint is baked in. The in-world tint comes from SuperByteBuffer.color()
-# at render time, multiplying the dye against this neutral greyscale.
+# Source path -> output path (relative to project root). The luma is normalized
+# AND lifted by GREYSCALE_FLOOR so the darkest source pixels do not become pure
+# black; otherwise dye_color * 0 stays 0 at render time, producing a harsh black
+# pattern over every tinted rope.
 GREYSCALE_BLOCK_TEXTURES: dict[Path, Path] = {
     SIMULATED_ASSETS / "textures/block/rope_particle.png":
         Path("src/main/resources/assets/dyeable_ropes/textures/block/rope_particle_greyscale.png"),
+    SIMULATED_ASSETS / "textures/block/rope_winch/winch.png":
+        Path("src/main/resources/assets/dyeable_ropes/textures/block/rope_winch/winch_greyscale.png"),
 }
 
+GREYSCALE_FLOOR = 0.25
 
-def write_greyscale(source_path: Path, target: Path) -> None:
+
+def write_greyscale(source_path: Path, target: Path, floor: float = GREYSCALE_FLOOR) -> None:
     if not source_path.is_file():
         print(f"warning: greyscale source not found: {source_path}", file=sys.stderr)
         return
     normalized, lo, hi = normalize_luma(Image.open(source_path))
+    if floor > 0.0:
+        pixels = normalized.load()
+        for y in range(normalized.height):
+            for x in range(normalized.width):
+                r, g, b, a = pixels[x, y]
+                if a == 0:
+                    continue
+                lifted = int(round(floor * 255 + (1.0 - floor) * r))
+                pixels[x, y] = (lifted, lifted, lifted, a)
     target.parent.mkdir(parents=True, exist_ok=True)
     normalized.save(target)
-    print(f"wrote {target} (luma [{lo:.1f}, {hi:.1f}])")
+    print(f"wrote {target} (luma [{lo:.1f}, {hi:.1f}], floor={floor})")
 
 
 def main() -> int:
