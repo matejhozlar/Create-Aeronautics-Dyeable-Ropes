@@ -7,6 +7,10 @@ on:
         description: 'Publish to CurseForge'
         type: boolean
         default: true
+      publish_modrinth:
+        description: 'Publish to Modrinth'
+        type: boolean
+        default: true
 
 jobs:
   publish:
@@ -68,3 +72,19 @@ jobs:
 
           curseforge-id: 1542130
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+
+      - name: Publish to Modrinth
+        if: ${{ inputs.publish_modrinth }}
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          version: ${{ steps.version.outputs.value }}
+          version-type: release
+          name: "[${{ steps.version.outputs.value }}] Dyeable Ropes"
+          changelog-file: CHANGELOG.md
+          loaders: neoforge
+          game-versions: 1.21.1
+          files: build/libs/!(*-@(dev|sources|javadoc)).jar
+          java: 21
+
+          modrinth-id: dfrdhOy5
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
