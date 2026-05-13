@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "dyeable_ropes",
+  "ingredients": [
+    {
+      "item": "simulated:rope_coupling"
+    },
+    {
+      "tag": "c:dyes/purple"
+    }
+  ],
+  "result": {
+    "id": "dyeable_ropes:purple_rope",
+    "count": 1
+  }
+}
