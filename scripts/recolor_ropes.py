@@ -176,7 +176,7 @@ GREYSCALE_BLOCK_TEXTURES: dict[Path, Path] = {
         Path("src/main/resources/assets/dyeable_ropes/textures/block/rope_winch/winch_greyscale.png"),
 }
 
-GREYSCALE_FLOOR = 0.25
+GREYSCALE_FLOOR = 0.4
 
 
 def write_greyscale(source_path: Path, target: Path, floor: float = GREYSCALE_FLOOR) -> None:
