@@ -19,6 +19,10 @@ sourceSets.main.resources {
 
 repositories {
     maven {
+        name = "RyanHCode"
+        url = "https://maven.ryanhcode.dev/releases"
+    }
+    maven {
         name = "CreateMod"
         url = "https://maven.createmod.net"
     }
@@ -32,6 +36,12 @@ repositories {
         filter {
             includeGroup "maven.modrinth"
         }
+    }
+    flatDir {
+        name = "SimulatedLocal"
+        dirs "../Simulated-Project/simulated/neoforge/build/libs",
+             "../Simulated-Project/all-neoforge/build/libs",
+             "libs"
     }
 }
 
@@ -75,6 +85,10 @@ configurations {
 }
 
 dependencies {
+    compileOnly fileTree(dir: 'libs', include: ['simulated-*.jar'])
+    compileOnly fileTree(dir: '../Simulated-Project/simulated/neoforge/build/libs', include: ['*.jar'])
+    compileOnly fileTree(dir: '../Simulated-Project/all-neoforge/build/libs', include: ['*.jar'])
+
     // create-aeronautics jar-in-jars Simulated, Aeronautics, and Offroad at runtime.
     localRuntime("maven.modrinth:sable:${sable_mod_version}+mc${minecraft_version}")
     localRuntime("maven.modrinth:create:${create_mod_version}+mc${minecraft_version}")
