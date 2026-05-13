@@ -4,7 +4,7 @@
   "group": "dyeable_ropes",
   "ingredients": [
     {
-      "item": "simulated:rope_coupling"
+      "tag": "dyeable_ropes:ropes"
     },
     {
       "tag": "c:dyes/red"

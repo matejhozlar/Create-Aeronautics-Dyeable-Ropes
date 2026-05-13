@@ -24,11 +24,13 @@ COLORS: list[str] = [
 
 MOD_ID = "dyeable_ropes"
 ROPE_INPUT = "simulated:rope_coupling"
+ROPES_TAG_ID = f"{MOD_ID}:ropes"
 
 ROOT = Path(__file__).resolve().parent.parent
 MODELS_DIR = ROOT / "src/main/resources/assets" / MOD_ID / "models/item"
 BLOCK_MODELS_DIR = ROOT / "src/main/resources/assets" / MOD_ID / "models/block"
 RECIPES_DIR = ROOT / "src/main/resources/data" / MOD_ID / "recipe"
+TAGS_DIR = ROOT / "src/main/resources/data" / MOD_ID / "tags/item"
 LANG_FILE = ROOT / "src/main/resources/assets" / MOD_ID / "lang/en_us.json"
 
 SIMULATED_MODELS = ROOT / "../Simulated-Project/simulated/common/src/main/resources/assets/simulated/models"
@@ -112,7 +114,7 @@ def main() -> int:
                 "category": "misc",
                 "group": "dyeable_ropes",
                 "ingredients": [
-                    {"item": ROPE_INPUT},
+                    {"tag": ROPES_TAG_ID},
                     {"tag": f"c:dyes/{color}"},
                 ],
                 "result": {"id": f"{MOD_ID}:{item_id}", "count": 1},
@@ -120,6 +122,13 @@ def main() -> int:
         )
 
         lang[f"item.{MOD_ID}.{item_id}"] = f"{title(color)} Rope"
+
+    write_json(
+        TAGS_DIR / "ropes.json",
+        {
+            "values": [ROPE_INPUT] + [f"{MOD_ID}:{color}_rope" for color in COLORS],
+        },
+    )
 
     LANG_FILE.parent.mkdir(parents=True, exist_ok=True)
     LANG_FILE.write_text(
