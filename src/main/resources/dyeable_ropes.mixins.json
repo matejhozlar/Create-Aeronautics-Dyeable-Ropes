@@ -5,11 +5,14 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "RopeItemMixin",
+    "RopeStrandHolderBehaviorAccessor",
     "RopeStrandHolderBehaviorMixin"
   ],
   "client": [
     "ClientRopeItemHandlerMixin",
-    "RopeStrandRendererMixin"
+    "RopeConnectorRendererMixin",
+    "RopeStrandRendererMixin",
+    "RopeWinchRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
