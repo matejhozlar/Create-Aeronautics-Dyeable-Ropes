@@ -11,6 +11,7 @@ public class DyeableRopes {
 
     public DyeableRopes(IEventBus modEventBus, ModContainer container) {
         DyeableRopesItems.ITEMS.register(modEventBus);
+        DyeableRopesItems.TABS.register(modEventBus);
         modEventBus.addListener(DyeableRopesItems::onBuildCreativeTabContents);
         modEventBus.addListener(DyeableRopesNetwork::register);
     }

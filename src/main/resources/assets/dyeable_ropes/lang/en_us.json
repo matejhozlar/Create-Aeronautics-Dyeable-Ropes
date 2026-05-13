@@ -14,5 +14,6 @@
   "item.dyeable_ropes.brown_rope": "Brown Rope",
   "item.dyeable_ropes.green_rope": "Green Rope",
   "item.dyeable_ropes.red_rope": "Red Rope",
-  "item.dyeable_ropes.black_rope": "Black Rope"
+  "item.dyeable_ropes.black_rope": "Black Rope",
+  "itemGroup.dyeable_ropes.main": "Dyeable Ropes"
 }

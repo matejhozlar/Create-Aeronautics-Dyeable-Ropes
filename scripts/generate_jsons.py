@@ -123,6 +123,8 @@ def main() -> int:
 
         lang[f"item.{MOD_ID}.{item_id}"] = f"{title(color)} Rope"
 
+    lang[f"itemGroup.{MOD_ID}.main"] = "Dyeable Ropes"
+
     write_json(
         TAGS_DIR / "ropes.json",
         {
