@@ -53,5 +53,10 @@ public final class ClientDyedStrandColors {
         return color != null ? color.getTextureDiffuseColor() : NO_TINT;
     }
 
+    public static boolean hasColor(RopeStrandHolderBehavior holder) {
+        UUID id = strandIdFor(holder);
+        return id != null && COLORS.containsKey(id);
+    }
+
     private ClientDyedStrandColors() {}
 }

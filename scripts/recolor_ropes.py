@@ -161,22 +161,42 @@ def tint(normalized: Image.Image, rgb: tuple[int, int, int], floor: float) -> Im
     return out
 
 
+SIMULATED_ASSETS = Path(
+    "../Simulated-Project/simulated/common/src/main/resources/assets/simulated"
+)
+
+# Source path -> output path (relative to project root). All are luma-normalized
+# only; no tint is baked in. The in-world tint comes from SuperByteBuffer.color()
+# at render time, multiplying the dye against this neutral greyscale.
+GREYSCALE_BLOCK_TEXTURES: dict[Path, Path] = {
+    SIMULATED_ASSETS / "textures/block/rope_particle.png":
+        Path("src/main/resources/assets/dyeable_ropes/textures/block/rope_particle_greyscale.png"),
+}
+
+
+def write_greyscale(source_path: Path, target: Path) -> None:
+    if not source_path.is_file():
+        print(f"warning: greyscale source not found: {source_path}", file=sys.stderr)
+        return
+    normalized, lo, hi = normalize_luma(Image.open(source_path))
+    target.parent.mkdir(parents=True, exist_ok=True)
+    normalized.save(target)
+    print(f"wrote {target} (luma [{lo:.1f}, {hi:.1f}])")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--source",
         type=Path,
-        default=Path(
-            "../Simulated-Project/simulated/common/src/main/resources/"
-            "assets/simulated/textures/item/rope_coupling.png"
-        ),
+        default=SIMULATED_ASSETS / "textures/item/rope_coupling.png",
         help="Path to Simulated's rope_coupling.png (relative to the project root).",
     )
     parser.add_argument(
         "--out",
         type=Path,
         default=Path("src/main/resources/assets/dyeable_ropes/textures/item"),
-        help="Output directory for per-color PNGs.",
+        help="Output directory for per-color item PNGs.",
     )
     parser.add_argument(
         "--floor",
@@ -206,6 +226,9 @@ def main() -> int:
         target = out_dir / f"{color_name}_rope.png"
         recolored.save(target)
         print(f"wrote {target}")
+
+    for source_block_path, target_block_path in GREYSCALE_BLOCK_TEXTURES.items():
+        write_greyscale(source_block_path, target_block_path)
 
     return 0
 
