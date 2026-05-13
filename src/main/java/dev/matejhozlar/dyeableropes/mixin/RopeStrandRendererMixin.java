@@ -1,6 +1,6 @@
 package dev.matejhozlar.dyeableropes.mixin;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.matejhozlar.dyeableropes.client.ClientDyedStrandColors;
 import dev.simulated_team.simulated.content.blocks.rope.RopeStrandHolderBehavior;
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(RopeStrandRenderer.class)
 public class RopeStrandRendererMixin {
 
-    @ModifyReturnValue(
+    @ModifyExpressionValue(
             method = "render",
             at = @At(
                     value = "INVOKE",
