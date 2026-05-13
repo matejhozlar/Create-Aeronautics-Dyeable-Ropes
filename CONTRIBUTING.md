@@ -91,7 +91,7 @@ Simulated's textures and model JSONs are licensed All Rights Reserved. The recol
 
 ## Branching
 
-- Branch off `main`.
+- Branch off `1.21.1` (the active development branch for Minecraft 1.21.1).
 - Branch naming: `<type>/<short-slug>`, where `<type>` matches the commit type (`feat/...`, `fix/...`, `chore/...`, `refactor/...`, `docs/...`).
 
 ## Commits
