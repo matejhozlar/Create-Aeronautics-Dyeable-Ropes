@@ -38,3 +38,6 @@ run/
 **/src/generated/**/.cache/
 repo/
 !**/src/**/repo/
+
+### Generated dyed rope textures (derived from Simulated's All-Rights-Reserved assets; regenerate locally via scripts/recolor_ropes.py) ###
+src/main/resources/assets/dyeable_ropes/textures/item/
