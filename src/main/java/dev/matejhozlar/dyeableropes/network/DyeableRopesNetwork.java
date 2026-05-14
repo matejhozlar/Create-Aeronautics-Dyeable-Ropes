@@ -11,6 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -32,6 +33,11 @@ public final class DyeableRopesNetwork {
                         DyeStrandPayload.TYPE,
                         DyeStrandPayload.STREAM_CODEC,
                         DyeableRopesNetwork::handleDyeStrand
+                )
+                .playToServer(
+                        BleachStrandPayload.TYPE,
+                        BleachStrandPayload.STREAM_CODEC,
+                        DyeableRopesNetwork::handleBleachStrand
                 );
     }
 
@@ -69,6 +75,30 @@ public final class DyeableRopesNetwork {
 
             if (!serverPlayer.getAbilities().instabuild) {
                 stack.shrink(1);
+            }
+        });
+    }
+
+    private static void handleBleachStrand(BleachStrandPayload payload, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> {
+            Player player = ctx.player();
+            if (!(player instanceof ServerPlayer serverPlayer)) return;
+            if (!(serverPlayer.level() instanceof ServerLevel serverLevel)) return;
+
+            ItemStack stack = serverPlayer.getItemInHand(payload.hand());
+            if (!stack.is(Items.WATER_BUCKET)) return;
+
+            ServerLevelRopeManager ropeManager = ServerLevelRopeManager.getOrCreate(serverLevel);
+            ServerRopeStrand strand = ropeManager.getStrand(payload.strandId());
+            if (strand == null) return;
+            if (!isWithinReach(serverPlayer, strand)) return;
+
+            if (DyedStrandSavedData.get(serverLevel).removeColor(payload.strandId()) == null) return;
+            PacketDistributor.sendToAllPlayers(
+                    new SetStrandColorPayload(payload.strandId(), SetStrandColorPayload.CLEAR));
+
+            if (!serverPlayer.getAbilities().instabuild) {
+                serverPlayer.setItemInHand(payload.hand(), new ItemStack(Items.BUCKET));
             }
         });
     }
