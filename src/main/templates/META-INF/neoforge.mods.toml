@@ -10,7 +10,7 @@ authors="saunhardy"
 displayURL="https://gitea.matejhoz.com/matejhozlar/dyeable-ropes"
 issueTrackerURL="https://gitea.matejhoz.com/matejhozlar/dyeable-ropes/issues"
 description='''
-Addon for Create: Aeronautics (Simulated module). Adds 16 dye-colored rope items, one per vanilla dye color, crafted by combining a Simulated rope with a dye in any crafting grid. Phase 1: items, recipes, and inventory icons only. The placed strand still uses Simulated's default appearance until a future update wires per-strand color into the renderer.
+Addon for Create: Aeronautics (Simulated module). Adds 16 dye-colored rope variants, one per vanilla dye color. Craft them by combining a Simulated rope with a dye in any crafting grid, or dye a placed strand in-world by holding a dye and right-clicking it. Colors persist on placed strands and render in-world, and breaking a colored strand returns the matching colored rope.
 '''
 
 [[dependencies.${mod_id}]]
