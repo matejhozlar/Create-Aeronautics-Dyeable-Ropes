@@ -38,11 +38,13 @@ public final class DyeableRopesNetwork {
     @OnlyIn(Dist.CLIENT)
     private static void handleSetStrandColor(SetStrandColorPayload payload, IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
-            if (payload.colorOrdinal() == SetStrandColorPayload.CLEAR) {
+            int ordinal = payload.colorOrdinal();
+            if (ordinal == SetStrandColorPayload.CLEAR) {
                 ClientDyedStrandColors.remove(payload.strandId());
-            } else {
-                ClientDyedStrandColors.put(payload.strandId(), DyeColor.byId(payload.colorOrdinal()));
+                return;
             }
+            if (ordinal < 0 || ordinal >= DyeColor.values().length) return;
+            ClientDyedStrandColors.put(payload.strandId(), DyeColor.byId(ordinal));
         });
     }
 
