@@ -1,13 +1,11 @@
 package dev.matejhozlar.dyeableropes;
 
-import dev.simulated_team.simulated.neoforge.SimulatedNeoForge;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -40,15 +38,6 @@ public final class DyeableRopesItems {
                     })
                     .build()
     );
-
-    public static void onBuildCreativeTabContents(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTab() != SimulatedNeoForge.TAB) {
-            return;
-        }
-        for (DyeColor color : DyeColor.values()) {
-            event.accept(ROPES.get(color).get());
-        }
-    }
 
     private DyeableRopesItems() {}
 }
