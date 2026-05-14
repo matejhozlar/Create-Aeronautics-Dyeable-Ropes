@@ -6,15 +6,18 @@ import dev.simulated_team.simulated.content.blocks.rope.strand.server.ServerLeve
 import dev.simulated_team.simulated.content.blocks.rope.strand.server.ServerRopeStrand;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.joml.Vector3d;
 
 public final class DyeableRopesNetwork {
 
@@ -56,6 +59,7 @@ public final class DyeableRopesNetwork {
             ServerLevelRopeManager ropeManager = ServerLevelRopeManager.getOrCreate(serverLevel);
             ServerRopeStrand strand = ropeManager.getStrand(payload.strandId());
             if (strand == null) return;
+            if (!isWithinReach(serverPlayer, strand)) return;
 
             DyeColor color = dye.getDyeColor();
             DyedStrandSavedData.get(serverLevel).setColor(payload.strandId(), color);
@@ -65,6 +69,18 @@ public final class DyeableRopesNetwork {
                 stack.shrink(1);
             }
         });
+    }
+
+    private static boolean isWithinReach(ServerPlayer player, ServerRopeStrand strand) {
+        Vec3 eye = player.getEyePosition();
+        double reach = player.getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE) + 2.0;
+        double maxDistanceSq = reach * reach;
+        for (Vector3d point : strand.getPoints()) {
+            if (point.distanceSquared(eye.x, eye.y, eye.z) <= maxDistanceSq) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private DyeableRopesNetwork() {}
