@@ -40,7 +40,7 @@ public final class DyeableRopesClientEvents {
 
         event.setCanceled(true);
         event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
-        PacketDistributor.sendToServer(new DyeStrandPayload(strandId, dye.getDyeColor().getId()));
+        PacketDistributor.sendToServer(new DyeStrandPayload(strandId, dye.getDyeColor().getId(), event.getHand()));
         player.swing(event.getHand());
     }
 
