@@ -49,7 +49,7 @@ public final class DyeableRopesNetwork {
             if (!(player instanceof ServerPlayer serverPlayer)) return;
             if (!(serverPlayer.level() instanceof ServerLevel serverLevel)) return;
 
-            ItemStack stack = serverPlayer.getMainHandItem();
+            ItemStack stack = serverPlayer.getItemInHand(payload.hand());
             if (!(stack.getItem() instanceof DyeItem dye)) return;
             if (dye.getDyeColor().getId() != payload.colorOrdinal()) return;
 
