@@ -1,8 +1,8 @@
 package dev.matejhozlar.dyeableropes;
 
+import dev.simulated_team.simulated.neoforge.SimulatedNeoForge;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
@@ -42,9 +42,7 @@ public final class DyeableRopesItems {
     );
 
     public static void onBuildCreativeTabContents(BuildCreativeModeTabContentsEvent event) {
-        ResourceLocation tabId = event.getTabKey().location();
-        boolean simulatedTab = "simulated".equals(tabId.getNamespace()) && "main_tab".equals(tabId.getPath());
-        if (!simulatedTab) {
+        if (event.getTab() != SimulatedNeoForge.TAB) {
             return;
         }
         for (DyeColor color : DyeColor.values()) {
