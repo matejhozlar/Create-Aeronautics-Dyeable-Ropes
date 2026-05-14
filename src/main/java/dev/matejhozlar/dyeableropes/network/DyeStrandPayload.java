@@ -17,7 +17,7 @@ public record DyeStrandPayload(UUID strandId, int colorOrdinal, InteractionHand 
             ResourceLocation.fromNamespaceAndPath(DyeableRopes.MODID, "dye_strand")
     );
 
-    private static final StreamCodec<ByteBuf, InteractionHand> HAND_CODEC = ByteBufCodecs.BOOL.map(
+    static final StreamCodec<ByteBuf, InteractionHand> HAND_CODEC = ByteBufCodecs.BOOL.map(
             mainHand -> mainHand ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND,
             hand -> hand == InteractionHand.MAIN_HAND
     );

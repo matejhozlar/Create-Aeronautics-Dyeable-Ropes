@@ -21,11 +21,13 @@ Simulated's rope system bakes one brown rope texture into a 3D mesh that the ren
 
 - 16 `DyedRopeItem` subclasses of Simulated's `RopeItem`, registered under `dyeable_ropes:<color>_rope`. Inheriting `useOn` gives the two-click attachment flow (and the in-world prediction outline preview) for free.
 - One shapeless crafting recipe per color: `#dyeable_ropes:ropes` (a tag holding plain `simulated:rope_coupling` plus all 16 colored variants) + `#c:dyes/<color>` -> the matching colored rope coupling. The same recipe handles first-time dyeing and recoloring.
+- One shapeless un-dye recipe: `#dyeable_ropes:colored_ropes` (the 16 colored variants only) + a water bucket -> plain `simulated:rope_coupling`. The bucket's container remainder returns it empty.
 
-### In-world dyeing
+### In-world dyeing and dye removal
 
 - Holding a dye and right-clicking a placed strand recolors it in place. The client handler (`DyeableRopesClientEvents.onRightClickItem`) runs Simulated's `ZiplineClientManager.raycastRope` against the strand's point list using the player's eye position and block-interaction range, then cancels the vanilla interaction and sends a `DyeStrandPayload` to the server.
 - The server revalidates: the held item is still the dye claimed by the payload, the strand UUID still exists in `ServerLevelRopeManager`. Then it writes the color into `DyedStrandSavedData`, broadcasts `SetStrandColorPayload` to every player so render state stays consistent, and shrinks the dye stack (creative skipped).
+- Holding a water bucket and right-clicking a colored strand removes its dye via `BleachStrandPayload`. The client only cancels the interaction when the strand is actually colored, so a water bucket on an uncolored strand still places water normally. The server revalidates the held bucket and reach, removes the color from `DyedStrandSavedData`, broadcasts a clearing `SetStrandColorPayload`, and swaps the bucket for an empty one (creative skipped).
 
 ### In-world rendering
 
@@ -60,16 +62,21 @@ Then run `gradlew build`.
 
 ## Using
 
-To dye a rope:
+To dye a rope coupling:
 
 | Where | How |
 | --- | --- |
 | Crafting table | Place any rope coupling tagged `#dyeable_ropes:ropes` (plain Simulated rope coupling or any colored variant) and any dye in the grid. Output is the matching colored rope coupling. |
 | In the world | Hold a dye, look at any placed strand, right-click. The strand changes color on the spot and one dye is consumed (creative skipped). |
 
-To place a colored strand, use the colored rope coupling item exactly like Simulated's `rope_coupling`: right-click the first holder block (chain, rope connector, rope winch) to anchor one end, right-click a second holder to attach the strand.
+To remove the dye:
 
-To revert to plain rope coupling, break the strand and re-place it with `simulated:rope_coupling`. There is no "remove dye" recipe.
+| Where | How |
+| --- | --- |
+| Crafting table | Place any colored rope coupling and a water bucket in the grid. Output is a plain `simulated:rope_coupling`; the empty bucket is returned. |
+| In the world | Hold a water bucket, look at a colored strand, right-click. The strand reverts to plain and the bucket empties (creative skipped). |
+
+To place a colored strand, use the colored rope coupling item exactly like Simulated's `rope_coupling`: right-click the first holder block (chain, rope connector, rope winch) to anchor one end, right-click a second holder to attach the strand.
 
 ## Configuration
 

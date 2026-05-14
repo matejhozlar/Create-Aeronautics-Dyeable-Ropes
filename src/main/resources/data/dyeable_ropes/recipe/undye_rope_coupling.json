@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "dyeable_ropes",
+  "ingredients": [
+    {
+      "tag": "dyeable_ropes:colored_ropes"
+    },
+    {
+      "item": "minecraft:water_bucket"
+    }
+  ],
+  "result": {
+    "id": "simulated:rope_coupling",
+    "count": 1
+  }
+}

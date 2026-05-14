@@ -2,6 +2,7 @@ package dev.matejhozlar.dyeableropes.client;
 
 import com.simibubi.create.foundation.utility.RaycastHelper;
 import dev.matejhozlar.dyeableropes.DyeableRopes;
+import dev.matejhozlar.dyeableropes.network.BleachStrandPayload;
 import dev.matejhozlar.dyeableropes.network.DyeStrandPayload;
 import dev.ryanhcode.sable.companion.math.JOMLConversion;
 import dev.simulated_team.simulated.content.blocks.rope.strand.client.ClientLevelRopeManager;
@@ -10,6 +11,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -38,16 +40,24 @@ public final class DyeableRopesClientEvents {
         if (!event.getLevel().isClientSide()) return;
 
         ItemStack stack = event.getItemStack();
-        if (!(stack.getItem() instanceof DyeItem dye)) return;
-
         Player player = event.getEntity();
-        UUID strandId = raycastForStrand(player);
-        if (strandId == null) return;
 
-        event.setCanceled(true);
-        event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
-        PacketDistributor.sendToServer(new DyeStrandPayload(strandId, dye.getDyeColor().getId(), event.getHand()));
-        player.swing(event.getHand());
+        if (stack.getItem() instanceof DyeItem dye) {
+            UUID strandId = raycastForStrand(player);
+            if (strandId == null) return;
+            event.setCanceled(true);
+            event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
+            PacketDistributor.sendToServer(new DyeStrandPayload(strandId, dye.getDyeColor().getId(), event.getHand()));
+            player.swing(event.getHand());
+        } else if (stack.is(Items.WATER_BUCKET)) {
+            UUID strandId = raycastForStrand(player);
+            if (strandId == null) return;
+            if (ClientDyedStrandColors.get(strandId) == null) return;
+            event.setCanceled(true);
+            event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
+            PacketDistributor.sendToServer(new BleachStrandPayload(strandId, event.getHand()));
+            player.swing(event.getHand());
+        }
     }
 
     private static UUID raycastForStrand(Player player) {
