@@ -73,8 +73,6 @@ public final class DyeableRopesNetwork {
 
     private static boolean isWithinReach(ServerPlayer player, ServerRopeStrand strand) {
         Vec3 eye = player.getEyePosition();
-        // client raycasts from the eye out to BLOCK_INTERACTION_RANGE + 1; the extra
-        // block of slack covers segment spacing and the raycast's strand half-thickness
         double reach = player.getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE) + 2.0;
         double maxDistanceSq = reach * reach;
         for (Vector3d point : strand.getPoints()) {
