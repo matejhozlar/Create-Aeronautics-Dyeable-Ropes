@@ -11,7 +11,7 @@
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
 </p>
 
-NeoForge addon for [Create: Aeronautics](https://modrinth.com/mod/create-aeronautics), specifically the bundled Simulated module that handles ropes. Adds 16 dye-colored rope variants, one per vanilla `DyeColor`, with colors that persist on placed strands so you can finally tell rope networks apart.
+NeoForge addon for [Create: Aeronautics](https://modrinth.com/mod/create-aeronautics), specifically the bundled Simulated module that handles ropes. Adds 16 dye-colored rope coupling variants, one per vanilla `DyeColor`, with colors that persist on placed strands so you can finally tell rope networks apart.
 
 ## How it works
 
@@ -20,7 +20,7 @@ Simulated's rope system bakes one brown rope texture into a 3D mesh that the ren
 ### Items and crafting
 
 - 16 `DyedRopeItem` subclasses of Simulated's `RopeItem`, registered under `dyeable_ropes:<color>_rope`. Inheriting `useOn` gives the two-click attachment flow (and the in-world prediction outline preview) for free.
-- One shapeless crafting recipe per color: `#dyeable_ropes:ropes` (a tag holding plain `simulated:rope_coupling` plus all 16 colored variants) + `#c:dyes/<color>` -> the matching colored rope. The same recipe handles first-time dyeing and recoloring.
+- One shapeless crafting recipe per color: `#dyeable_ropes:ropes` (a tag holding plain `simulated:rope_coupling` plus all 16 colored variants) + `#c:dyes/<color>` -> the matching colored rope coupling. The same recipe handles first-time dyeing and recoloring.
 
 ### In-world dyeing
 
@@ -37,7 +37,7 @@ Simulated's rope system bakes one brown rope texture into a 3D mesh that the ren
 ### Persistence and sync
 
 - `DyedStrandSavedData` is a per-`ServerLevel` `SavedData` mapping strand UUID -> `DyeColor`. Written on successful strand creation (via a `RopeItemMixin` that hooks `attachRope`'s return) and cleared on strand destruction (via a `RopeStrandHolderBehaviorMixin` that hooks `destroyRope`).
-- The same `destroyRope` mixin swaps the hardcoded `SimItems.ROPE_COUPLING` drop for the matching colored rope, so breaking a colored strand gives you back the colored rope, not the plain one.
+- The same `destroyRope` mixin swaps the hardcoded `SimItems.ROPE_COUPLING` drop for the matching colored rope coupling, so breaking a colored strand gives you back the colored rope coupling, not the plain one.
 - When a player newly enters tracking range of a colored strand, a second injection in `tickStrandTrackingPlayers` piggybacks on Simulated's existing strand-sync moment to also send a `SetStrandColorPayload` to that player. This covers cross-session loads, walking into range, and dimension changes without enumerating SavedData on login.
 
 ## Building
@@ -64,12 +64,12 @@ To dye a rope:
 
 | Where | How |
 | --- | --- |
-| Crafting table | Place any rope tagged `#dyeable_ropes:ropes` (plain Simulated rope or any colored variant) and any dye in the grid. Output is the matching colored rope. |
+| Crafting table | Place any rope coupling tagged `#dyeable_ropes:ropes` (plain Simulated rope coupling or any colored variant) and any dye in the grid. Output is the matching colored rope coupling. |
 | In the world | Hold a dye, look at any placed strand, right-click. The strand changes color on the spot and one dye is consumed (creative skipped). |
 
-To place a colored strand, use the colored rope item exactly like Simulated's `rope_coupling`: right-click the first holder block (chain, rope connector, rope winch) to anchor one end, right-click a second holder to attach the strand.
+To place a colored strand, use the colored rope coupling item exactly like Simulated's `rope_coupling`: right-click the first holder block (chain, rope connector, rope winch) to anchor one end, right-click a second holder to attach the strand.
 
-To revert to plain rope, break the strand and re-place it with `simulated:rope_coupling`. There is no "remove dye" recipe.
+To revert to plain rope coupling, break the strand and re-place it with `simulated:rope_coupling`. There is no "remove dye" recipe.
 
 ## Configuration
 
