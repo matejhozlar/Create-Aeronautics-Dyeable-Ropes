@@ -178,6 +178,9 @@ GREYSCALE_BLOCK_TEXTURES: dict[Path, Path] = {
         Path("src/main/resources/assets/dyeable_ropes/textures/block/rope_winch/winch_coil_greyscale.png"),
 }
 
+# Higher than the item --floor default (0.15) on purpose: that one bakes the
+# tint into a finished sprite, while this lifts a greyscale that the renderer
+# multiplies by the dye at draw time, so its shadows need more headroom.
 GREYSCALE_FLOOR = 0.5
 
 
@@ -218,8 +221,9 @@ def main() -> int:
         "--floor",
         type=float,
         default=0.15,
-        help="Shadow floor in [0, 1]. 0 = darkest pixels become pure black; "
-             "higher values keep more color in shadows. Default 0.15.",
+        help="Shadow floor in [0, 1] for the item PNGs only (block textures use "
+             "GREYSCALE_FLOOR). 0 = darkest pixels become pure black; higher "
+             "values keep more color in shadows. Default 0.15.",
     )
     args = parser.parse_args()
 
