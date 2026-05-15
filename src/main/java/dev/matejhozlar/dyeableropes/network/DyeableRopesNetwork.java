@@ -13,8 +13,6 @@ import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -41,7 +39,6 @@ public final class DyeableRopesNetwork {
                 );
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static void handleSetStrandColor(SetStrandColorPayload payload, IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             int ordinal = payload.colorOrdinal();
