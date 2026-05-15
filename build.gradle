@@ -152,6 +152,10 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
+tasks.named('runServer', JavaExec) {
+    standardInput = System.in
+}
+
 idea {
     module {
         downloadSources = true
