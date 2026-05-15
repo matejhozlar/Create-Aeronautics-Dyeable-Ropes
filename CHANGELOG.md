@@ -1,10 +1,14 @@
-## Version 1.0.0
+## Version 1.1.0
 
 ### Added
-- 16 dye-colored rope coupling items, one per vanilla `DyeColor`, registered under `dyeable_ropes:<color>_rope` and inserted into Simulated's creative tab.
-- Shapeless crafting recipe per color: any item tagged `dyeable_ropes:ropes` (plain Simulated rope coupling or any colored rope coupling) + any matching color dye, so first-time dyeing and recoloring share one recipe.
-- In-world dyeing: hold a dye, look at any placed strand, right-click to recolor it on the spot. One dye consumed per recolor.
-- Colored rope coupling items behave as Simulated `RopeItem` instances, so the two-click rope-attachment flow works exactly like the plain `rope_coupling`, including the prediction outline preview while holding the rope coupling.
-- Strand colors persist across saves via a per-`ServerLevel` `DyedStrandSavedData` keyed by strand UUID, and resync to clients when they walk into range or rejoin.
-- Strands, rope connector knots, and rope winch coils all render in the strand's dye color in-world. Tinting uses a luma-normalized greyscale derivative of Simulated's rope textures so the multiply produces clean colors instead of muddy brown-tinted ones.
-- When a strand is destroyed, the matching colored rope coupling is what drops back (mixin into `RopeStrandHolderBehavior.destroyRope` swaps the hardcoded `SimItems.ROPE_COUPLING` drop based on the recorded color).
+- Dye removal for rope couplings: hold a water bucket and right-click a colored strand to bleach it back to its natural color, or craft a colored rope coupling with a water bucket to get a plain one back
+
+### Changed
+- Improved rope strand rendering performance by resolving tint color once per render call instead of once per segment
+
+### Fixed
+- Fixed a crash on dedicated servers caused by a client-only network handler being registered on the server
+- Fixed off-hand dye not working when dyeing strands in-world
+- Fixed strand colors persisting across world sessions on the client, which could cause strands to appear incorrectly colored after reconnecting
+- Fixed the server accepting dye requests for strands outside the player's reach
+- Fixed the server accepting invalid color values from malformed network packets
