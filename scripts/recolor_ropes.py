@@ -42,6 +42,22 @@ FALLBACK_DYE_COLORS: dict[str, int] = {
     "green":      6192150,
     "red":        11546150,
     "black":      1908001,
+    "maroon":      8070931, #Dye Depot compat
+    "rose":      16735844,
+    "coral":      14645080,
+    "indigo":      3350103,
+    "navy":      1391972,
+    "slate":      5004934,
+    "olive":      9211690,
+    "amber":      14135040,
+    "beige":      14800291,
+    "teal":      3111783,
+    "mint":      3722877,
+    "aqua":      6222028,
+    "verdant":      2447124,
+    "forest":      3318566,
+    "ginger":      13590817,
+    "tan":      16030813
 }
 
 # Pattern matches lines like: WHITE(0, "white", 16383998, MapColor.SNOW, ...

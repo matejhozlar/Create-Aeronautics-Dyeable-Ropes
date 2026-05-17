@@ -20,6 +20,8 @@ from pathlib import Path
 COLORS: list[str] = [
     "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
     "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black",
+    "maroon", "rose", "coral", "ginger", "tan", "beige", "olive", "amber", "forest",
+    "verdant", "teal", "aqua", "mint", "navy", "slate", "indigo"
 ]
 
 MOD_ID = "dyeable_ropes"
