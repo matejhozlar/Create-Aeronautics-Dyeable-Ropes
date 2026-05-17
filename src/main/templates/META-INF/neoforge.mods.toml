@@ -35,5 +35,29 @@ Addon for Create: Aeronautics (Simulated module). Adds dye-colored rope coupling
     side="BOTH"
     reason="Recipes consume simulated:rope_coupling."
 
+[[dependencies.${mod_id}]]
+    modId="sable"
+    type="required"
+    versionRange="[${sable_mod_version},)"
+    ordering="AFTER"
+    side="BOTH"
+    reason="Transitive dependency of Simulated's rope strand system."
+
+[[dependencies.${mod_id}]]
+    modId="create"
+    type="required"
+    versionRange="[${create_mod_version},)"
+    ordering="AFTER"
+    side="BOTH"
+    reason="Uses Create's RaycastHelper and CreatePonderPlugin utilities."
+
+[[dependencies.${mod_id}]]
+    modId="dye_depot"
+    type="optional"
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
+    reason="Adds 16 extra dye colors beyond the 16 vanilla ones."
+
 [[mixins]]
 config="dyeable_ropes.mixins.json"
