@@ -17,12 +17,29 @@ import json
 import sys
 from pathlib import Path
 
-COLORS: list[str] = [
+VANILLA_COLORS: list[str] = [
     "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
     "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black",
-    "maroon", "rose", "coral", "ginger", "tan", "beige", "olive", "amber", "forest",
-    "verdant", "teal", "aqua", "mint", "navy", "slate", "indigo"
 ]
+
+# Colors added by mods that extend DyeColor at runtime (e.g. Dye Depot's
+# DyeColorMixin). Recipes for these gate on neoforge:mod_loaded and tag
+# entries are marked required:false so a vanilla install stays silent.
+COMPAT_COLORS: dict[str, list[str]] = {
+    "dye_depot": [
+        "maroon", "rose", "coral", "ginger", "tan", "beige", "olive", "amber",
+        "forest", "verdant", "teal", "aqua", "mint", "navy", "slate", "indigo",
+    ],
+}
+
+COLORS: list[str] = VANILLA_COLORS + [c for cs in COMPAT_COLORS.values() for c in cs]
+
+
+def gating_mod(color: str) -> str | None:
+    for mod, colors in COMPAT_COLORS.items():
+        if color in colors:
+            return mod
+    return None
 
 MOD_ID = "dyeable_ropes"
 ROPE_INPUT = "simulated:rope_coupling"
@@ -109,19 +126,22 @@ def main() -> int:
             },
         )
 
-        write_json(
-            RECIPES_DIR / f"{item_id}.json",
-            {
-                "type": "minecraft:crafting_shapeless",
-                "category": "misc",
-                "group": "dyeable_ropes",
-                "ingredients": [
-                    {"tag": ROPES_TAG_ID},
-                    {"tag": f"c:dyes/{color}"},
-                ],
-                "result": {"id": f"{MOD_ID}:{item_id}", "count": 1},
-            },
-        )
+        recipe: dict = {
+            "type": "minecraft:crafting_shapeless",
+            "category": "misc",
+            "group": "dyeable_ropes",
+            "ingredients": [
+                {"tag": ROPES_TAG_ID},
+                {"tag": f"c:dyes/{color}"},
+            ],
+            "result": {"id": f"{MOD_ID}:{item_id}", "count": 1},
+        }
+        mod = gating_mod(color)
+        if mod is not None:
+            recipe["neoforge:conditions"] = [
+                {"type": "neoforge:mod_loaded", "modid": mod},
+            ]
+        write_json(RECIPES_DIR / f"{item_id}.json", recipe)
 
         lang[f"item.{MOD_ID}.{item_id}"] = f"{title(color)} Rope Coupling"
 
@@ -130,7 +150,12 @@ def main() -> int:
     write_json(
         TAGS_DIR / "ropes.json",
         {
-            "values": [ROPE_INPUT] + [f"{MOD_ID}:{color}_rope" for color in COLORS],
+            "values": [ROPE_INPUT] + [
+                {"id": f"{MOD_ID}:{color}_rope", "required": False}
+                if gating_mod(color) is not None
+                else f"{MOD_ID}:{color}_rope"
+                for color in COLORS
+            ],
         },
     )
 
