@@ -10,7 +10,7 @@ authors="saunhardy"
 displayURL="https://gitea.matejhoz.com/matejhozlar/create-aeronautics-dyeable-ropes"
 issueTrackerURL="https://gitea.matejhoz.com/matejhozlar/create-aeronautics-dyeable-ropes/issues"
 description='''
-Addon for Create: Aeronautics (Simulated module). Adds 16 dye-colored rope coupling variants, one per vanilla dye color. Craft them by combining a Simulated rope coupling with a dye in any crafting grid, or dye a placed strand in-world by holding a dye and right-clicking it. Colors persist on placed strands and render in-world, and breaking a colored strand returns the matching colored rope coupling.
+Addon for Create: Aeronautics (Simulated module). Adds dye-colored rope coupling variants: 16 vanilla colors, plus 16 more when Dye Depot is installed. Craft them by combining a Simulated rope coupling with a dye in any crafting grid, or dye a placed strand in-world by holding a dye and right-clicking it. Colors persist on placed strands and render in-world, and breaking a colored strand returns the matching colored rope coupling.
 '''
 
 [[dependencies.${mod_id}]]

@@ -1,4 +1,4 @@
-"""Regenerate 16 dyed rope item textures from Simulated's rope_coupling.png.
+"""Regenerate dyed rope item textures from Simulated's rope_coupling.png.
 
 Dye RGBs are read at runtime from the decompiled `net.minecraft.world.item.DyeColor`
 that NeoForge's moddev plugin caches under `~/.gradle/caches/ng_execute/`. That keeps

@@ -11,7 +11,7 @@
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
 </p>
 
-NeoForge addon for [Create: Aeronautics](https://modrinth.com/mod/create-aeronautics), specifically the bundled Simulated module that handles ropes. Adds 16 dye-colored rope coupling variants, one per vanilla `DyeColor`, with colors that persist on placed strands so you can finally tell rope networks apart.
+NeoForge addon for [Create: Aeronautics](https://modrinth.com/mod/create-aeronautics), specifically the bundled Simulated module that handles ropes. Adds 16 dye-colored rope coupling variants (one per vanilla `DyeColor`), with colors that persist on placed strands so you can finally tell rope networks apart. With [Dye Depot](https://modrinth.com/mod/dye-depot) installed, an additional 16 colors become available (maroon, rose, coral, ginger, tan, beige, olive, amber, forest, verdant, teal, aqua, mint, navy, slate, indigo) for a total of 32.
 
 ## How it works
 
@@ -19,9 +19,9 @@ Simulated's rope system bakes one brown rope texture into a 3D mesh that the ren
 
 ### Items and crafting
 
-- 16 `DyedRopeItem` subclasses of Simulated's `RopeItem`, registered under `dyeable_ropes:<color>_rope`. Inheriting `useOn` gives the two-click attachment flow (and the in-world prediction outline preview) for free.
-- One shapeless crafting recipe per color: `#dyeable_ropes:ropes` (a tag holding plain `simulated:rope_coupling` plus all 16 colored variants) + `#c:dyes/<color>` -> the matching colored rope coupling. The same recipe handles first-time dyeing and recoloring.
-- One shapeless un-dye recipe: `#dyeable_ropes:colored_ropes` (the 16 colored variants only) + a water bucket -> plain `simulated:rope_coupling`. The bucket's container remainder returns it empty.
+- `DyedRopeItem` subclasses of Simulated's `RopeItem`, registered under `dyeable_ropes:<color>_rope`. The 16 vanilla colors are always present; 16 additional Dye Depot colors register conditionally when that mod is loaded. Inheriting `useOn` gives the two-click attachment flow (and the in-world prediction outline preview) for free.
+- One shapeless crafting recipe per color: `#dyeable_ropes:ropes` (a tag holding plain `simulated:rope_coupling` plus all colored variants) + `#c:dyes/<color>` -> the matching colored rope coupling. The same recipe handles first-time dyeing and recoloring. Recipes for Dye Depot colors are wrapped in a `neoforge:mod_loaded` condition so they only appear when Dye Depot is installed.
+- One shapeless un-dye recipe: `#dyeable_ropes:colored_ropes` (the colored variants only) + a water bucket -> plain `simulated:rope_coupling`. The bucket's container remainder returns it empty.
 
 ### In-world dyeing and dye removal
 
@@ -31,8 +31,8 @@ Simulated's rope system bakes one brown rope texture into a 3D mesh that the ren
 
 ### In-world rendering
 
-- A scripted recolor pass (`scripts/recolor_ropes.py`) reads Simulated's `rope_particle.png`, `rope_winch/winch.png`, and `rope_winch/winch_coil.png`, luma-normalizes each, and lifts the shadow floor to `0.5` so the darkest pixels don't crush to pure black when multiplied. The outputs are gitignored because Simulated's assets are All Rights Reserved; the workflow regenerates them on every release build.
-- A second script (`scripts/generate_jsons.py`) clones Simulated's rope block-model JSONs and rewrites the texture references to point at our greyscale variants.
+- A scripted recolor pass (`scripts/recolor_ropes.py`) reads Simulated's `rope_particle.png`, `rope_winch/winch.png`, and `rope_winch/winch_coil.png`, luma-normalizes each, and lifts the shadow floor to `0.5` so the darkest pixels don't crush to pure black when multiplied. It generates item textures for all 32 colors (16 vanilla + 16 Dye Depot), sourcing Dye Depot RGB values from a fallback table since those colors don't exist in vanilla `DyeColor.java`. The outputs are gitignored because Simulated's assets are All Rights Reserved; the workflow regenerates them on every release build.
+- A second script (`scripts/generate_jsons.py`) clones Simulated's rope block-model JSONs and rewrites the texture references to point at our greyscale variants. It also generates per-color item models, recipes, tags, and the language file for all 32 colors, gating Dye Depot entries behind `neoforge:mod_loaded` conditions.
 - The four greyscale models register as Flywheel `PartialModel` handles in `DyeableRopesPartialModels`.
 - `RopeStrandRendererMixin`, `RopeConnectorRendererMixin`, and `RopeWinchRendererMixin` each use MixinExtras `@ModifyExpressionValue` on the `SimPartialModels.*` field reads to swap to our greyscale equivalents when the strand has a recorded color, then use a second `@ModifyExpressionValue` on the `SuperByteBuffer.light(int)` chain to apply `.color(dye)`. Uncolored strands skip both swaps and render exactly like vanilla.
 
@@ -49,7 +49,7 @@ This depends on Simulated's compiled jar. Either:
 - Build Simulated locally first (`gradlew :simulated:neoforge:build` in `Simulated-Project/`), or
 - Drop a built `simulated-neoforge-*.jar` into `./libs/`.
 
-The 16 item textures, 3 greyscale block textures, and 4 derived block model JSONs are all gitignored because they are derivatives of Simulated's All-Rights-Reserved assets. Regenerate them locally after cloning:
+The 32 item textures (16 vanilla + 16 Dye Depot), 3 greyscale block textures, and 4 derived block model JSONs are all gitignored because they are derivatives of Simulated's All-Rights-Reserved assets. Regenerate them locally after cloning:
 
 ```
 python scripts/recolor_ropes.py
@@ -77,6 +77,12 @@ To remove the dye:
 | In the world | Hold a water bucket, look at a colored strand, right-click. The strand reverts to plain and the bucket empties (creative skipped). |
 
 To place a colored strand, use the colored rope coupling item exactly like Simulated's `rope_coupling`: right-click the first holder block (chain, rope connector, rope winch) to anchor one end, right-click a second holder to attach the strand.
+
+## Compatibility
+
+| Mod | Effect |
+| --- | --- |
+| [Dye Depot](https://modrinth.com/mod/dye-depot) | Adds 16 extra rope coupling colors (maroon, rose, coral, ginger, tan, beige, olive, amber, forest, verdant, teal, aqua, mint, navy, slate, indigo). Recipes and tag entries for these colors are gated behind a `neoforge:mod_loaded` condition, so they only appear when Dye Depot is installed. A vanilla-only setup is completely unaffected. |
 
 ## Configuration
 
