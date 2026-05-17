@@ -42,6 +42,22 @@ FALLBACK_DYE_COLORS: dict[str, int] = {
     "green":      6192150,
     "red":        11546150,
     "black":      1908001,
+    "maroon":      8070931, #Dye Depot compat
+    "rose":      16735844,
+    "coral":      14645080,
+    "indigo":      3350103,
+    "navy":      1391972,
+    "slate":      5004934,
+    "olive":      9211690,
+    "amber":      14135040,
+    "beige":      14800291,
+    "teal":      3111783,
+    "mint":      3722877,
+    "aqua":      6222028,
+    "verdant":      2447124,
+    "forest":      3318566,
+    "ginger":      13590817,
+    "tan":      16030813
 }
 
 # Pattern matches lines like: WHITE(0, "white", 16383998, MapColor.SNOW, ...
@@ -72,26 +88,27 @@ def parse_dye_colors(source: Path) -> dict[str, int]:
 
 def load_dye_colors(verbose: bool = True) -> dict[str, tuple[int, int, int]]:
     source = find_dye_color_source()
+    parsed: dict[str, int] = {}
     if source is not None:
         try:
             parsed = parse_dye_colors(source)
         except Exception as exc:
-            print(f"warning: failed to parse {source} ({exc}); using fallback", file=sys.stderr)
-            parsed = FALLBACK_DYE_COLORS
+            print(f"warning: failed to parse {source} ({exc}); using fallback only", file=sys.stderr)
+            parsed = {}
         else:
-            if len(parsed) != len(FALLBACK_DYE_COLORS):
-                print(
-                    f"warning: parsed only {len(parsed)} entries from {source}; using fallback",
-                    file=sys.stderr,
-                )
-                parsed = FALLBACK_DYE_COLORS
-            elif verbose:
-                print(f"using DyeColor RGBs from {source}")
-    else:
-        if verbose:
-            print("no NeoForge cache found; using fallback DyeColor RGBs")
-        parsed = FALLBACK_DYE_COLORS
-    return {name: ((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF) for name, rgb in parsed.items()}
+            if verbose:
+                if parsed:
+                    print(f"using DyeColor RGBs from {source} ({len(parsed)} live, merged with fallback)")
+                else:
+                    print(f"warning: parsed no entries from {source}; using fallback only", file=sys.stderr)
+    elif verbose:
+        print("no NeoForge cache found; using fallback DyeColor RGBs")
+
+    # Live cache values win for vanilla colors; fallback supplies entries added
+    # by mods that extend DyeColor at runtime (e.g. Dye Depot) and so are absent
+    # from vanilla's DyeColor.java.
+    merged = {**FALLBACK_DYE_COLORS, **parsed}
+    return {name: ((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF) for name, rgb in merged.items()}
 
 
 def normalize_luma(source: Image.Image) -> tuple[Image.Image, float, float]:
