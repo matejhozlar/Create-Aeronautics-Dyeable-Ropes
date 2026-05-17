@@ -49,7 +49,7 @@ Addon for Create: Aeronautics (Simulated module). Adds dye-colored rope coupling
     versionRange="[${create_mod_version},)"
     ordering="AFTER"
     side="BOTH"
-    reason="Rope coupling item and strand block come from Create."
+    reason="Uses Create's RaycastHelper and CreatePonderPlugin utilities."
 
 [[dependencies.${mod_id}]]
     modId="dye_depot"
