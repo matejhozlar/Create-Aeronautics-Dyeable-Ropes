@@ -51,7 +51,7 @@ Either works; `libs/` takes precedence if both are present.
 
 ### Regenerating derived assets
 
-The 16 item textures, 3 greyscale block textures, and 4 derived rope model JSONs are **gitignored**. They are derivatives of Simulated's All-Rights-Reserved textures and model JSONs, so we never commit them. Regenerate them after cloning (and again whenever Simulated's source textures change):
+The 32 item textures (16 vanilla + 16 Dye Depot), 3 greyscale block textures, and 4 derived rope model JSONs are **gitignored**. They are derivatives of Simulated's All-Rights-Reserved textures and model JSONs, so we never commit them. Regenerate them after cloning (and again whenever Simulated's source textures change):
 
 ```sh
 python scripts/recolor_ropes.py
