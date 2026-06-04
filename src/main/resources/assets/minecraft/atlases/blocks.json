@@ -1,0 +1,8 @@
+{
+  "sources": [
+    {
+      "type": "single",
+      "resource": "dyeable_ropes:block/rope_winch/winch_coil_scroll_greyscale"
+    }
+  ]
+}

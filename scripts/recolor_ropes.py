@@ -193,6 +193,8 @@ GREYSCALE_BLOCK_TEXTURES: dict[Path, Path] = {
         Path("src/main/resources/assets/dyeable_ropes/textures/block/rope_winch/winch_greyscale.png"),
     SIMULATED_ASSETS / "textures/block/rope_winch/winch_coil.png":
         Path("src/main/resources/assets/dyeable_ropes/textures/block/rope_winch/winch_coil_greyscale.png"),
+    SIMULATED_ASSETS / "textures/block/rope_winch/winch_coil_scroll.png":
+        Path("src/main/resources/assets/dyeable_ropes/textures/block/rope_winch/winch_coil_scroll_greyscale.png"),
 }
 
 # Higher than the item --floor default (0.15) on purpose: that one bakes the
