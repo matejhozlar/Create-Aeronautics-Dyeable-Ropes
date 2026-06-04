@@ -4,10 +4,14 @@ import com.simibubi.create.foundation.ponder.CreatePonderPlugin;
 import dev.matejhozlar.dyeableropes.DyeableRopes;
 import dev.matejhozlar.dyeableropes.DyeableRopesItems;
 import dev.matejhozlar.dyeableropes.DyedRopeItem;
+import dev.simulated_team.simulated.Simulated;
 import dev.simulated_team.simulated.index.SimPonderTags;
 import dev.simulated_team.simulated.ponder.scenes.RopeScenes;
 import net.createmod.ponder.api.registration.PonderSceneRegistrationHelper;
 import net.createmod.ponder.api.registration.PonderTagRegistrationHelper;
+import net.createmod.ponder.foundation.PonderIndex;
+import net.createmod.ponder.foundation.registration.DefaultPonderSceneRegistrationHelper;
+import net.createmod.ponder.foundation.registration.PonderSceneRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -27,7 +31,12 @@ public class DyeableRopesPonderPlugin extends CreatePonderPlugin {
                 .map(DeferredHolder::getId)
                 .toArray(ResourceLocation[]::new);
 
-        helper.forComponents(ropeIds)
+        // Borrow Simulated's namespace so the scenes load its ponder/rope.nbt schematic and simulated.ponder.* lang.
+        PonderSceneRegistrationHelper<ResourceLocation> simulatedHelper =
+                new DefaultPonderSceneRegistrationHelper(
+                        Simulated.MOD_ID, (PonderSceneRegistry) PonderIndex.getSceneAccess());
+
+        simulatedHelper.forComponents(ropeIds)
                 .addStoryBoard("rope", RopeScenes::ropeIntro)
                 .addStoryBoard("rope", RopeScenes::ropeConnections);
     }
