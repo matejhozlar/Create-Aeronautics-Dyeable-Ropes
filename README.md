@@ -31,10 +31,11 @@ Simulated's rope system bakes one brown rope texture into a 3D mesh that the ren
 
 ### In-world rendering
 
-- A scripted recolor pass (`scripts/recolor_ropes.py`) reads Simulated's `rope_particle.png`, `rope_winch/winch.png`, and `rope_winch/winch_coil.png`, luma-normalizes each, and lifts the shadow floor to `0.5` so the darkest pixels don't crush to pure black when multiplied. It generates item textures for all 32 colors (16 vanilla + 16 Dye Depot), sourcing Dye Depot RGB values from a fallback table since those colors don't exist in vanilla `DyeColor.java`. The outputs are gitignored because Simulated's assets are All Rights Reserved; the workflow regenerates them on every release build.
+- A scripted recolor pass (`scripts/recolor_ropes.py`) reads Simulated's `rope_particle.png`, `rope_winch/winch.png`, `rope_winch/winch_coil.png`, and `rope_winch/winch_coil_scroll.png`, luma-normalizes each, and lifts the shadow floor to `0.5` so the darkest pixels don't crush to pure black when multiplied. It generates item textures for all 32 colors (16 vanilla + 16 Dye Depot), sourcing Dye Depot RGB values from a fallback table since those colors don't exist in vanilla `DyeColor.java`. The outputs are gitignored because Simulated's assets are All Rights Reserved; the workflow regenerates them on every release build.
 - A second script (`scripts/generate_jsons.py`) clones Simulated's rope block-model JSONs and rewrites the texture references to point at our greyscale variants. It also generates per-color item models, recipes, tags, and the language file for all 32 colors, gating Dye Depot entries behind `neoforge:mod_loaded` conditions.
 - The four greyscale models register as Flywheel `PartialModel` handles in `DyeableRopesPartialModels`.
 - `RopeStrandRendererMixin`, `RopeConnectorRendererMixin`, and `RopeWinchRendererMixin` each use MixinExtras `@ModifyExpressionValue` on the `SimPartialModels.*` field reads to swap to our greyscale equivalents when the strand has a recorded color, then use a second `@ModifyExpressionValue` on the `SuperByteBuffer.light(int)` chain to apply `.color(dye)`. Uncolored strands skip both swaps and render exactly like vanilla.
+- The winch coil animates while powered by scrolling its UVs into a separate `winch_coil_scroll` sprite via a `SpriteShiftEntry`. `RopeWinchRendererMixin` adds a third `@ModifyExpressionValue` on the `getCoilShift()` call to swap in a greyscale `SpriteShiftEntry` (`DyeableRopesSpriteShifts.ROPE_WINCH_COIL`) for colored winches. Without it, the scroll remaps the greyscale coil's UVs into Simulated's brown coil sprite, which lands outside our sprite and renders as black artifacts. The greyscale scroll sprite is stitched into the block atlas via `assets/minecraft/atlases/blocks.json` (nothing else references it), and `DyeableRopesSpriteShifts.init()` runs at client construction so the sprite registers before the atlas stitches.
 
 ### Persistence and sync
 
@@ -49,7 +50,7 @@ This depends on Simulated's compiled jar. Either:
 - Build Simulated locally first (`gradlew :simulated:neoforge:build` in `Simulated-Project/`), or
 - Drop a built `simulated-neoforge-*.jar` into `./libs/`.
 
-The 32 item textures (16 vanilla + 16 Dye Depot), 3 greyscale block textures, and 4 derived block model JSONs are all gitignored because they are derivatives of Simulated's All-Rights-Reserved assets. Regenerate them locally after cloning:
+The 32 item textures (16 vanilla + 16 Dye Depot), 4 greyscale block textures, and 4 derived block model JSONs are all gitignored because they are derivatives of Simulated's All-Rights-Reserved assets. Regenerate them locally after cloning:
 
 ```
 python scripts/recolor_ropes.py

@@ -2,6 +2,7 @@ package dev.matejhozlar.dyeableropes;
 
 import dev.matejhozlar.dyeableropes.client.DyeableRopesPartialModels;
 import dev.matejhozlar.dyeableropes.client.DyeableRopesPonderPlugin;
+import dev.matejhozlar.dyeableropes.client.DyeableRopesSpriteShifts;
 import net.createmod.ponder.foundation.PonderIndex;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -12,6 +13,7 @@ public class DyeableRopesClient {
 
     public DyeableRopesClient(IEventBus modEventBus) {
         DyeableRopesPartialModels.init();
+        DyeableRopesSpriteShifts.init();
         PonderIndex.addPlugin(new DyeableRopesPonderPlugin());
     }
 }

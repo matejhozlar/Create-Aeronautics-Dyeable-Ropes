@@ -5,8 +5,10 @@ import com.llamalad7.mixinextras.sugar.Local;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import dev.matejhozlar.dyeableropes.client.ClientDyedStrandColors;
 import dev.matejhozlar.dyeableropes.client.DyeableRopesPartialModels;
+import dev.matejhozlar.dyeableropes.client.DyeableRopesSpriteShifts;
 import dev.simulated_team.simulated.content.blocks.rope.rope_winch.RopeWinchBlockEntity;
 import dev.simulated_team.simulated.content.blocks.rope.rope_winch.RopeWinchRenderer;
+import net.createmod.catnip.render.SpriteShiftEntry;
 import net.createmod.catnip.render.SuperByteBuffer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -40,5 +42,19 @@ public class RopeWinchRendererMixin {
             @Local(argsOnly = true) RopeWinchBlockEntity be
     ) {
         return buffer.color(ClientDyedStrandColors.tintForHolder(be.getRopeHolder()));
+    }
+
+    @ModifyExpressionValue(
+            method = "renderComponents",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ldev/simulated_team/simulated/content/blocks/rope/rope_winch/RopeWinchRenderer;getCoilShift()Lnet/createmod/catnip/render/SpriteShiftEntry;"
+            )
+    )
+    private SpriteShiftEntry dyeable_ropes$swapCoilShift(
+            SpriteShiftEntry original,
+            @Local(argsOnly = true) RopeWinchBlockEntity be
+    ) {
+        return ClientDyedStrandColors.hasColor(be.getRopeHolder()) ? DyeableRopesSpriteShifts.ROPE_WINCH_COIL : original;
     }
 }
