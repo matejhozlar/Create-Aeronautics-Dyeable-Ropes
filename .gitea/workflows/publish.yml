@@ -106,4 +106,7 @@ jobs:
           files: build/libs/!(*-@(dev|sources|javadoc)).jar
           java: 21
 
+          github-tag: v${{ steps.version.outputs.value }}
+          github-draft: false
+          github-prerelease: false
           github-token: ${{ secrets.GITHUB_TOKEN }}
