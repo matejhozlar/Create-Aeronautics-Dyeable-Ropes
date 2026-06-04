@@ -1,4 +1,5 @@
-## Version 1.2.1
+## Version 1.2.2
 
 ### Fixed
-- Fixed missing mod dependency declarations in the mod manifest so the loader now correctly requires Create and Sable and lists Dye Depot as optional.
+- Fixed dyed rope winch coil rendering with black artifacts while powered and turning.
+- Fixed colored rope ponder guide scenes showing empty schematics and missing captions.
