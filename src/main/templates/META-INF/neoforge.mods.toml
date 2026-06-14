@@ -30,15 +30,15 @@ Addon for Create: Aeronautics (Simulated module). Adds dye-colored rope coupling
 [[dependencies.${mod_id}]]
     modId="simulated"
     type="required"
-    versionRange="[${simulated_mod_version},)"
+    versionRange="${simulated_version_range}"
     ordering="AFTER"
     side="BOTH"
-    reason="Recipes consume simulated:rope_coupling."
+    reason="Mixins hook Simulated's internal rope classes, which can change between versions; bound the range so the mod refuses to load on an untested Simulated (and thus an older Create: Aeronautics) instead of crashing."
 
 [[dependencies.${mod_id}]]
     modId="sable"
     type="required"
-    versionRange="[${sable_mod_version},)"
+    versionRange="${sable_version_range}"
     ordering="AFTER"
     side="BOTH"
     reason="Transitive dependency of Simulated's rope strand system."

@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="https://www.minecraft.net/"><img src="https://img.shields.io/badge/Minecraft-1.21.1-62B47A?logo=minecraft" alt="Minecraft"></a>
-  <a href="https://neoforged.net/"><img src="https://img.shields.io/badge/NeoForge-21.1.227%2B-DC2626" alt="NeoForge"></a>
+  <a href="https://neoforged.net/"><img src="https://img.shields.io/badge/NeoForge-21.1.228%2B-DC2626" alt="NeoForge"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
 </p>
 
@@ -45,19 +45,22 @@ Simulated's rope system bakes one brown rope texture into a 3D mesh that the ren
 
 ## Building
 
-This depends on Simulated's compiled jar. Either:
+Simulated has no public maven; it ships only jar-in-jar'd inside Create: Aeronautics. The build extracts Simulated's compiled classes from that bundle, so no separate Simulated checkout is required. First extract it (downloads Create: Aeronautics from Modrinth, pinned by `create_aeronautics_version` in `gradle.properties`):
 
-- Build Simulated locally first (`gradlew :simulated:neoforge:build` in `Simulated-Project/`), or
-- Drop a built `simulated-neoforge-*.jar` into `./libs/`.
+```
+gradlew extractSimulated
+```
 
-The 32 item textures (16 vanilla + 16 Dye Depot), 4 greyscale block textures, and 4 derived block model JSONs are all gitignored because they are derivatives of Simulated's All-Rights-Reserved assets. Regenerate them locally after cloning:
+This drops the bundled Simulated jar at `build/extracted-simulated/simulated.jar`.
+
+The 32 item textures (16 vanilla + 16 Dye Depot), 4 greyscale block textures, and 4 derived block model JSONs are all gitignored because they are derivatives of Simulated's All-Rights-Reserved assets. Regenerate them after extracting (Pillow is the only Python dependency, `pip install Pillow`):
 
 ```
 python scripts/recolor_ropes.py
 python scripts/generate_jsons.py
 ```
 
-Both scripts read from a sibling `../Simulated-Project/` checkout. Pillow is the only Python dependency (`pip install Pillow`).
+Both scripts read Simulated's assets from the extracted jar, falling back to the create-aeronautics jar in the Gradle cache.
 
 Then run `gradlew build`.
 

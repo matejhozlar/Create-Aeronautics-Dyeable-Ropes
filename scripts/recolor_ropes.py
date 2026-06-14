@@ -17,11 +17,14 @@ Run from the project root:
 from __future__ import annotations
 
 import argparse
+import io
 import re
 import sys
 from pathlib import Path
 
 from PIL import Image
+
+from simulated_assets import SimulatedAssets, load_simulated_assets
 
 # Fallback values mirrored from net.minecraft.world.item.DyeColor for environments
 # without a NeoForge cache (e.g. CI). The live values from the cache take precedence.
@@ -178,22 +181,20 @@ def tint(normalized: Image.Image, rgb: tuple[int, int, int], floor: float) -> Im
     return out
 
 
-SIMULATED_ASSETS = Path(
-    "../Simulated-Project/simulated/common/src/main/resources/assets/simulated"
-)
+ROPE_COUPLING_SOURCE = "textures/item/rope_coupling.png"
 
-# Source path -> output path (relative to project root). The luma is normalized
-# AND lifted by GREYSCALE_FLOOR so the darkest source pixels do not become pure
-# black; otherwise dye_color * 0 stays 0 at render time, producing a harsh black
-# pattern over every tinted rope.
-GREYSCALE_BLOCK_TEXTURES: dict[Path, Path] = {
-    SIMULATED_ASSETS / "textures/block/rope_particle.png":
+# Simulated asset path (relative to assets/simulated) -> output path (relative to
+# the project root). The luma is normalized AND lifted by GREYSCALE_FLOOR so the
+# darkest source pixels do not become pure black; otherwise dye_color * 0 stays 0
+# at render time, producing a harsh black pattern over every tinted rope.
+GREYSCALE_BLOCK_TEXTURES: dict[str, Path] = {
+    "textures/block/rope_particle.png":
         Path("src/main/resources/assets/dyeable_ropes/textures/block/rope_particle_greyscale.png"),
-    SIMULATED_ASSETS / "textures/block/rope_winch/winch.png":
+    "textures/block/rope_winch/winch.png":
         Path("src/main/resources/assets/dyeable_ropes/textures/block/rope_winch/winch_greyscale.png"),
-    SIMULATED_ASSETS / "textures/block/rope_winch/winch_coil.png":
+    "textures/block/rope_winch/winch_coil.png":
         Path("src/main/resources/assets/dyeable_ropes/textures/block/rope_winch/winch_coil_greyscale.png"),
-    SIMULATED_ASSETS / "textures/block/rope_winch/winch_coil_scroll.png":
+    "textures/block/rope_winch/winch_coil_scroll.png":
         Path("src/main/resources/assets/dyeable_ropes/textures/block/rope_winch/winch_coil_scroll_greyscale.png"),
 }
 
@@ -203,11 +204,14 @@ GREYSCALE_BLOCK_TEXTURES: dict[Path, Path] = {
 GREYSCALE_FLOOR = 0.5
 
 
-def write_greyscale(source_path: Path, target: Path, floor: float = GREYSCALE_FLOOR) -> None:
-    if not source_path.is_file():
-        print(f"warning: greyscale source not found: {source_path}", file=sys.stderr)
+def write_greyscale(
+    assets: SimulatedAssets, source_rel: str, target: Path, floor: float = GREYSCALE_FLOOR
+) -> None:
+    data = assets.read_bytes(source_rel)
+    if data is None:
+        print(f"warning: greyscale source not found in {assets.origin}: {source_rel}", file=sys.stderr)
         return
-    normalized, lo, hi = normalize_luma(Image.open(source_path))
+    normalized, lo, hi = normalize_luma(Image.open(io.BytesIO(data)))
     if floor > 0.0:
         pixels = normalized.load()
         for y in range(normalized.height):
@@ -227,8 +231,9 @@ def main() -> int:
     parser.add_argument(
         "--source",
         type=Path,
-        default=SIMULATED_ASSETS / "textures/item/rope_coupling.png",
-        help="Path to Simulated's rope_coupling.png (relative to the project root).",
+        default=None,
+        help="Filesystem path to a rope_coupling.png override. Defaults to the "
+             "copy inside Simulated's bundled jar.",
     )
     parser.add_argument(
         "--out",
@@ -246,17 +251,26 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    src_path: Path = args.source
-    if not src_path.is_file():
-        print(f"Source not found: {src_path}", file=sys.stderr)
-        return 1
+    assets = load_simulated_assets()
+    print(f"reading Simulated assets from {assets.origin}")
+
+    if args.source is not None:
+        if not args.source.is_file():
+            print(f"Source not found: {args.source}", file=sys.stderr)
+            return 1
+        source = Image.open(args.source)
+    else:
+        data = assets.read_bytes(ROPE_COUPLING_SOURCE)
+        if data is None:
+            print(f"Source not found in {assets.origin}: {ROPE_COUPLING_SOURCE}", file=sys.stderr)
+            return 1
+        source = Image.open(io.BytesIO(data))
 
     dye_colors = load_dye_colors()
 
     out_dir: Path = args.out
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    source = Image.open(src_path)
     normalized, min_luma, max_luma = normalize_luma(source)
     print(f"source luma range: [{min_luma:.1f}, {max_luma:.1f}]")
 
@@ -266,8 +280,8 @@ def main() -> int:
         recolored.save(target)
         print(f"wrote {target}")
 
-    for source_block_path, target_block_path in GREYSCALE_BLOCK_TEXTURES.items():
-        write_greyscale(source_block_path, target_block_path)
+    for source_rel, target_block_path in GREYSCALE_BLOCK_TEXTURES.items():
+        write_greyscale(assets, source_rel, target_block_path)
 
     return 0
 
