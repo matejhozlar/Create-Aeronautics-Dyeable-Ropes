@@ -24,7 +24,7 @@ public class RopeItemMixin {
             method = "useOn",
             at = @At(
                     value = "INVOKE",
-                    target = "Ldev/simulated_team/simulated/content/items/rope/RopeItem/RopeItem;attachRope(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/BlockPos;)Z"
+                    target = "Ldev/simulated_team/simulated/content/items/rope/RopeItem/RopeItem;attachRope(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/BlockPos;Z)Z"
             )
     )
     private boolean dyeable_ropes$recordStrandColor(
