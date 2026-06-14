@@ -46,11 +46,20 @@ def _read_aeronautics_version() -> str | None:
     return None
 
 
-def _find_aeronautics_jar() -> Path | None:
-    cache = (
-        Path.home() / ".gradle" / "caches" / "modules-2" / "files-2.1"
+def _gradle_user_home() -> Path:
+    env = os.environ.get("GRADLE_USER_HOME")
+    return Path(env) if env else Path.home() / ".gradle"
+
+
+def _aeronautics_cache_dir() -> Path:
+    return (
+        _gradle_user_home() / "caches" / "modules-2" / "files-2.1"
         / "maven.modrinth" / "create-aeronautics"
     )
+
+
+def _find_aeronautics_jar() -> Path | None:
+    cache = _aeronautics_cache_dir()
     if not cache.is_dir():
         return None
     # Prefer the version the build is pinned to so a stale cache of some other
@@ -80,7 +89,7 @@ def _nested_simulated_bytes(aeronautics_jar: Path) -> bytes | None:
 
 def load_simulated_assets() -> SimulatedAssets:
     override = os.environ.get("SIMULATED_JAR")
-    if override:
+    if override and Path(override).is_file():
         path = Path(override)
         return SimulatedAssets(path.read_bytes(), str(path))
 
@@ -93,7 +102,14 @@ def load_simulated_assets() -> SimulatedAssets:
         if nested is not None:
             return SimulatedAssets(nested, f"{aeronautics_jar} (bundled simulated)")
 
+    cache = _aeronautics_cache_dir()
+    checked = [
+        f"SIMULATED_JAR={override or '(unset)'}",
+        f"extracted jar={EXTRACTED_JAR} (exists={EXTRACTED_JAR.is_file()})",
+        f"gradle cache={cache} (exists={cache.is_dir()})",
+        f"GRADLE_USER_HOME={os.environ.get('GRADLE_USER_HOME') or '(unset)'}",
+    ]
     raise SystemExit(
         "Could not locate Simulated assets. Run `gradlew extractSimulated` first, "
-        "or set SIMULATED_JAR to a Simulated jar."
+        "or set SIMULATED_JAR to a Simulated jar.\nChecked:\n  " + "\n  ".join(checked)
     )
