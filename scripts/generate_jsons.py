@@ -1,11 +1,11 @@
 """Generate per-color item model JSONs, shapeless dye recipes, the en_us lang map,
 and derived greyscale rope block-model JSONs.
 
-The block-model JSONs are cloned from Simulated's source models, with the rope
-particle texture reference rewritten to point at our locally-generated greyscale
-PNG. Because Simulated's assets are All Rights Reserved, the outputs land in a
-gitignored directory and only exist on developer machines that have the Simulated
-source checked out next door.
+The block-model JSONs are cloned from Simulated's models (read out of its bundled
+jar), with the rope particle texture reference rewritten to point at our
+locally-generated greyscale PNG. Because Simulated's assets are All Rights
+Reserved, the outputs land in a gitignored directory and only exist on machines
+that have run the build.
 
 Run from the project root:
     python scripts/generate_jsons.py
@@ -16,6 +16,8 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+
+from simulated_assets import SimulatedAssets, load_simulated_assets
 
 VANILLA_COLORS: list[str] = [
     "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
@@ -52,8 +54,6 @@ RECIPES_DIR = ROOT / "src/main/resources/data" / MOD_ID / "recipe"
 TAGS_DIR = ROOT / "src/main/resources/data" / MOD_ID / "tags/item"
 LANG_FILE = ROOT / "src/main/resources/assets" / MOD_ID / "lang/en_us.json"
 
-SIMULATED_MODELS = ROOT / "../Simulated-Project/simulated/common/src/main/resources/assets/simulated/models"
-
 # Map of (Simulated source path -> our derived target path). All paths are
 # relative to Simulated's `models/` dir on the left and our `models/block/` dir
 # on the right.
@@ -89,21 +89,14 @@ def rewrite_textures(payload: dict) -> None:
                 textures[key] = TEXTURE_REWRITES[value]
 
 
-def write_derived_block_models() -> int:
-    if not SIMULATED_MODELS.is_dir():
-        print(
-            f"warning: Simulated models dir not found at {SIMULATED_MODELS}; "
-            "skipping greyscale block models",
-            file=sys.stderr,
-        )
-        return 0
+def write_derived_block_models(assets: SimulatedAssets) -> int:
     written = 0
     for source_rel, target_rel in DERIVED_ROPE_MODELS.items():
-        source_path = SIMULATED_MODELS / source_rel
-        if not source_path.is_file():
-            print(f"warning: source not found: {source_path}", file=sys.stderr)
+        data = assets.read_bytes(f"models/{source_rel}")
+        if data is None:
+            print(f"warning: source not found in {assets.origin}: models/{source_rel}", file=sys.stderr)
             continue
-        payload = json.loads(source_path.read_text(encoding="utf-8"))
+        payload = json.loads(data.decode("utf-8"))
         rewrite_textures(payload)
         target_path = BLOCK_MODELS_DIR / target_rel
         write_json(target_path, payload)
@@ -165,7 +158,9 @@ def main() -> int:
     )
     print(f"wrote {len(COLORS)} models, {len(COLORS)} recipes, and {LANG_FILE.name}")
 
-    derived = write_derived_block_models()
+    assets = load_simulated_assets()
+    print(f"reading Simulated assets from {assets.origin}")
+    derived = write_derived_block_models(assets)
     if derived:
         print(f"wrote {derived} derived greyscale block model(s)")
     return 0
