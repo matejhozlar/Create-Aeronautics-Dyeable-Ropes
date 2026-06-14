@@ -1,5 +1,5 @@
-## Version 1.2.2
+## Version 1.2.3
 
 ### Fixed
-- Fixed dyed rope winch coil rendering with black artifacts while powered and turning.
-- Fixed colored rope ponder guide scenes showing empty schematics and missing captions.
+- Fixed a crash on mod load caused by a mixin signature mismatch with Simulated 1.3.0's updated `attachRope` method.
+- Updated compatibility with Create Aeronautics 1.3.0, Sable 2.0.0, and Simulated 1.3.0.
