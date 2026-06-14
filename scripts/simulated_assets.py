@@ -36,6 +36,16 @@ class SimulatedAssets:
         return self._zip.read(name)
 
 
+def _read_aeronautics_version() -> str | None:
+    props = ROOT / "gradle.properties"
+    if not props.is_file():
+        return None
+    for line in props.read_text(encoding="utf-8").splitlines():
+        if line.strip().startswith("create_aeronautics_version"):
+            return line.partition("=")[2].strip() or None
+    return None
+
+
 def _find_aeronautics_jar() -> Path | None:
     cache = (
         Path.home() / ".gradle" / "caches" / "modules-2" / "files-2.1"
@@ -43,6 +53,13 @@ def _find_aeronautics_jar() -> Path | None:
     )
     if not cache.is_dir():
         return None
+    # Prefer the version the build is pinned to so a stale cache of some other
+    # version does not win the mtime race; fall back to newest if it is absent.
+    version = _read_aeronautics_version()
+    if version:
+        pinned = list(cache.glob(f"{version}+*/*/create-aeronautics-*.jar"))
+        if pinned:
+            return max(pinned, key=lambda p: p.stat().st_mtime)
     jars = list(cache.glob("*/*/create-aeronautics-*.jar"))
     if not jars:
         return None
