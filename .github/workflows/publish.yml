@@ -47,9 +47,15 @@ jobs:
         run: echo "value=$(grep '^mod_version=' gradle.properties | cut -d'=' -f2)" >> $GITHUB_OUTPUT
 
       - name: Extract bundled Simulated jar
-        run: ./gradlew extractSimulated
+        run: |
+          ./gradlew extractSimulated
+          echo "=== build/extracted-simulated ==="
+          ls -la build/extracted-simulated/ || true
+          test -f build/extracted-simulated/simulated.jar
 
       - name: Generate derived assets
+        env:
+          SIMULATED_JAR: build/extracted-simulated/simulated.jar
         run: |
           pip install --quiet Pillow
           python scripts/recolor_ropes.py
