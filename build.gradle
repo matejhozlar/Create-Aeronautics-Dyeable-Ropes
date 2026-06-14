@@ -136,9 +136,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_name               : mod_name,
             mod_license            : mod_license,
             mod_version            : mod_version,
-            sable_mod_version      : sable_mod_version,
             create_mod_version     : create_mod_version,
-            simulated_mod_version  : simulated_mod_version,
             simulated_version_range: simulated_version_range,
             sable_version_range    : sable_version_range,
     ]
